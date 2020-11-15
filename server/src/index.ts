@@ -14,7 +14,7 @@ const main = async () => {
       break;
     }
   } catch (e) {
-    console.error(e);
+    console.log(e);
     retries -= 1;
     console.log(`retries left: ${retries}`);
     await new Promise((res) => setTimeout(res, 4000));
