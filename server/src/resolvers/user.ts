@@ -57,4 +57,10 @@ export class UserResolver {
 
     return user;
   }
+
+  @Mutation(() => Boolean)
+  async deleteUser(@Arg('id', () => String) id: string): Promise<boolean> {
+    await User.delete(id);
+    return true;
+  }
 }
