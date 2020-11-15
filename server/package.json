@@ -6,8 +6,8 @@
   "scripts": {
     "start": "node src/index.ts",
     "server": "nodemon src/index.ts",
-    "db:create": "ts-node ./node_modules/typeorm/cli.js migration:run",
-    "db:generate": "ts-node ./node_modules/typeorm/cli.js migration:run",
+    "db:create": "ts-node ./node_modules/typeorm/cli.js migration:create -n vlog",
+    "db:generate": "ts-node ./node_modules/typeorm/cli.js migration:generate -n vlog",
     "db:migrate": "ts-node ./node_modules/typeorm/cli.js migration:run"
   },
   "keywords": [

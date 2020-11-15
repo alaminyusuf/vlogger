@@ -7,10 +7,10 @@
   "database": "vlogs",
   "synchronize": true,
   "logging": false,
-  "entities": ["src/database/entity/**/*.ts"],
-  "migrations": ["src/database/migration/**/*.ts"],
+  "entities": ["src/entity/**/*.ts"],
+  "migrations": ["src/migration/**/*.ts"],
   "cli": {
-    "entitiesDir": "src/database/entity",
-    "migrationsDir": "src/database/migration"
+    "entitiesDir": "src/entity",
+    "migrationsDir": "src/migration"
   }
 }

@@ -1,7 +1,9 @@
 import 'reflect-metadata';
-// import { ApolloServer } from 'apollo-server-express';
+import { ApolloServer } from 'apollo-server-express';
 import { createConnection } from 'typeorm';
-import cors from 'cors';
+import { buildSchema } from 'type-graphql';
+import { HelloResolver } from './resolvers/hello';
+// import cors from 'cors';
 import express from 'express';
 
 const main = async () => {
@@ -20,19 +22,21 @@ const main = async () => {
     await new Promise((res) => setTimeout(res, 4000));
   }
 
-  // const apolloServer = new ApolloServer({
-  //   resolvers,
-  //   schema: schema
-  // })
+  const apolloServer = new ApolloServer({
+    schema: await buildSchema({
+      resolvers: [HelloResolver],
+      validate: false,
+    }),
+  });
 
-  app.use(
-    cors({
-      origin: (origin, cb) => cb(null, true),
-      credentials: true,
-    })
-  );
+  // app.use(
+  //   cors({
+  //     origin: (origin, cb) => cb(null, true),
+  //     credentials: true,
+  //   })
+  // );
 
-  // apolloServer.applyMiddleware({app, cors: false, path: '/graphql'})
+  apolloServer.applyMiddleware({ app });
 
   app.listen(4000, () => console.info('Server is running on PORT 4000'));
 };
