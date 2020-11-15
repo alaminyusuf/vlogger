@@ -17,15 +17,44 @@ export class UserResolver {
 
   @Mutation(() => User)
   async createUser(
-    @Arg('email', () => String) username: string,
-    @Arg('username', () => String) email: string,
+    @Arg('username', () => String) username: string,
+    @Arg('email', () => String) email: string,
     @Arg('password', () => String) password: string
   ): Promise<User> {
     return User.create({
       id: v4() as string,
+      username,
       email,
       password,
-      username,
     }).save();
+  }
+
+  @Mutation(() => User)
+  async updateUser(
+    @Arg('id', () => String) id: string,
+    @Arg('username', () => String, { nullable: true }) username: string,
+    @Arg('email', () => String, { nullable: true }) email: string,
+    @Arg('password', () => String, { nullable: true }) password: string
+  ): Promise<User | undefined> {
+    const user = await User.findOne(id);
+
+    if (!user) return undefined;
+
+    if (typeof username !== 'undefined') {
+      user.username = username;
+      await User.update({ id }, { username });
+    }
+
+    if (typeof password !== 'undefined') {
+      user.password = password;
+      await User.update({ id }, { password });
+    }
+
+    if (typeof email !== 'undefined') {
+      user.email = email;
+      await User.update({ id }, { email });
+    }
+
+    return user;
   }
 }
