@@ -3,8 +3,10 @@ import { ApolloServer } from 'apollo-server-express';
 import { createConnection } from 'typeorm';
 import { buildSchema } from 'type-graphql';
 import { HelloResolver } from './resolvers/hello';
+import { UserResolver } from './resolvers/user';
 // import cors from 'cors';
 import express from 'express';
+import { v4 } from 'uuid';
 
 const main = async () => {
   const app = express();
@@ -24,7 +26,7 @@ const main = async () => {
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [HelloResolver],
+      resolvers: [HelloResolver, UserResolver],
       validate: false,
     }),
   });
@@ -37,6 +39,8 @@ const main = async () => {
   // );
 
   apolloServer.applyMiddleware({ app });
+  const id = v4();
+  console.log(id);
 
   app.listen(4000, () => console.info('Server is running on PORT 4000'));
 };
