@@ -1,5 +1,6 @@
 import { Arg, Mutation, Query, Resolver } from 'type-graphql';
 import { User } from './../entity/User';
+import argon2 from 'argon2';
 
 import { v4 } from 'uuid';
 
@@ -21,11 +22,12 @@ export class UserResolver {
     @Arg('email', () => String) email: string,
     @Arg('password', () => String) password: string
   ): Promise<User> {
+    const hashedPassword = await argon2.hash(password);
     return User.create({
       id: v4() as string,
       username,
       email,
-      password,
+      password: hashedPassword,
     }).save();
   }
 
