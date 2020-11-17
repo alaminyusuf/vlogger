@@ -42,18 +42,55 @@ export class UserResolver {
     return User.findOne({ where: { username } });
   }
 
-  @Mutation(() => User)
+  @Mutation(() => UserResponse)
   async register(
     @Arg('username', () => String) username: string,
     @Arg('email', () => String) email: string,
     @Arg('password', () => String) password: string
-  ): Promise<User> {
+  ): Promise<UserResponse> {
+    if (username.length <= 2) {
+      return {
+        errors: [
+          {
+            field: 'username',
+            message: 'username must be greater than 2',
+          },
+        ],
+      };
+    }
+
+    if (password.length <= 5) {
+      return {
+        errors: [
+          {
+            field: 'password',
+            message: 'password must at least be 6',
+          },
+        ],
+      };
+    }
     const hashedPassword = await argon2.hash(password);
-    return User.create({
+    const user = await User.create({
       username,
       email,
       password: hashedPassword,
-    }).save();
+    });
+
+    try {
+      await user.save();
+    } catch (err) {
+      if (err.code == '23505') {
+        return {
+          errors: [
+            {
+              field: 'username',
+              message: 'username or email already taken',
+            },
+          ],
+        };
+      }
+    }
+    return { user };
   }
 
   @Mutation(() => User)
@@ -74,7 +111,8 @@ export class UserResolver {
 
     if (typeof password !== 'undefined') {
       user.password = password;
-      await User.update({ id }, { password });
+      const hashedPassword = await argon2.hash(password);
+      await User.update({ id }, { password: hashedPassword });
     }
 
     if (typeof email !== 'undefined') {
@@ -95,7 +133,7 @@ export class UserResolver {
   async login(
     @Arg('username', () => String) username: string,
     @Arg('password', () => String) password: string
-  ): Promise<UserResponse | undefined> {
+  ): Promise<UserResponse> {
     const user = await User.findOne({ where: { username } });
 
     if (!user) {
