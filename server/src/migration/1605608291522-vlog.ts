@@ -1,6 +1,6 @@
 import {MigrationInterface, QueryRunner} from "typeorm";
 
-export class vlog1605430826871 implements MigrationInterface {
+export class vlog1605608291522 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
     }

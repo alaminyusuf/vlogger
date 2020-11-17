@@ -1,8 +1,32 @@
-import { Arg, Mutation, Query, Resolver } from 'type-graphql';
+import {
+  Arg,
+  Mutation,
+  Query,
+  Resolver,
+  ObjectType,
+  Field,
+  Int,
+} from 'type-graphql';
 import { User } from './../entity/User';
 import argon2 from 'argon2';
 
-import { v4 } from 'uuid';
+@ObjectType()
+class FieldError {
+  @Field(() => String)
+  field: string;
+
+  @Field(() => String)
+  message: string;
+}
+
+@ObjectType()
+class UserResponse {
+  @Field(() => [FieldError], { nullable: true })
+  errors?: FieldError[];
+
+  @Field(() => User, { nullable: true })
+  user?: User;
+}
 
 @Resolver()
 export class UserResolver {
@@ -12,19 +36,20 @@ export class UserResolver {
   }
 
   @Query(() => User, { nullable: true })
-  async user(@Arg('id', () => String) id: string): Promise<User | undefined> {
-    return User.findOne(id);
+  async user(
+    @Arg('username', () => String) username: string
+  ): Promise<User | undefined> {
+    return User.findOne({ where: { username } });
   }
 
   @Mutation(() => User)
-  async createUser(
+  async register(
     @Arg('username', () => String) username: string,
     @Arg('email', () => String) email: string,
     @Arg('password', () => String) password: string
   ): Promise<User> {
     const hashedPassword = await argon2.hash(password);
     return User.create({
-      id: v4() as string,
       username,
       email,
       password: hashedPassword,
@@ -33,7 +58,7 @@ export class UserResolver {
 
   @Mutation(() => User)
   async updateUser(
-    @Arg('id', () => String) id: string,
+    @Arg('id', () => Int) id: number,
     @Arg('username', () => String, { nullable: true }) username: string,
     @Arg('email', () => String, { nullable: true }) email: string,
     @Arg('password', () => String, { nullable: true }) password: string
@@ -64,5 +89,40 @@ export class UserResolver {
   async deleteUser(@Arg('id', () => String) id: string): Promise<boolean> {
     await User.delete(id);
     return true;
+  }
+
+  @Mutation(() => UserResponse)
+  async login(
+    @Arg('username', () => String) username: string,
+    @Arg('password', () => String) password: string
+  ): Promise<UserResponse | undefined> {
+    const user = await User.findOne({ where: { username } });
+
+    if (!user) {
+      return {
+        errors: [
+          {
+            field: 'user',
+            message: 'user does not exits',
+          },
+        ],
+      };
+    }
+
+    const valid = await argon2.verify(user.password, password);
+
+    if (!valid) {
+      return {
+        errors: [
+          {
+            field: 'password',
+            message: 'password mismatch',
+          },
+        ],
+      };
+    }
+    return {
+      user,
+    };
   }
 }
