@@ -35,14 +35,6 @@ const main = async () => {
     port: 6379,
   });
 
-  const apolloServer = new ApolloServer({
-    schema: await buildSchema({
-      resolvers: [HelloResolver, UserResolver],
-      validate: false,
-    }),
-    context: ({ req, res }): MyContext => ({ req, res }),
-  });
-
   app.use(
     session({
       store: new RedisStore({
@@ -61,6 +53,14 @@ const main = async () => {
       saveUninitialized: false,
     })
   );
+
+  const apolloServer = new ApolloServer({
+    schema: await buildSchema({
+      resolvers: [HelloResolver, UserResolver],
+      validate: false,
+    }),
+    context: ({ req, res }): MyContext => ({ req, res }),
+  });
 
   // app.use(
   //   cors({
