@@ -1,38 +1,20 @@
 import 'reflect-metadata';
 import { ApolloServer } from 'apollo-server-express';
-import { createConnection } from 'typeorm';
 import { buildSchema } from 'type-graphql';
+import { createConnection } from 'typeorm';
+import { MyContext } from './types';
+
+// Resolvers
 import { HelloResolver } from './resolvers/hello';
 import { UserResolver } from './resolvers/user';
+
+import connectRedis from 'connect-redis';
 import express from 'express';
-import { v4 } from 'uuid';
 import redis from 'redis';
 import session from 'express-session';
-import connectRedis from 'connect-redis';
 
 const main = async () => {
   const app = express();
-
-  const RedisStore = connectRedis(session);
-  const redisClient = redis.createClient();
-
-  app.use(
-    session({
-      store: new RedisStore({
-        client: redisClient,
-        disableTouch: true,
-        disableTTL: true,
-      }),
-      cookie: {
-        maxAge: 1000 * 60 * 60 * 24 * 365,
-        httpOnly: true,
-        secure: false,
-      },
-      secret: 'some secrect',
-      resave: false,
-      name: 'vlogger',
-    })
-  );
 
   let retries = 5;
   try {
@@ -47,12 +29,38 @@ const main = async () => {
     await new Promise((res) => setTimeout(res, 4000));
   }
 
+  const RedisStore = connectRedis(session);
+  const redisClient = redis.createClient({
+    host: 'redis-service',
+    port: 6379,
+  });
+
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
       resolvers: [HelloResolver, UserResolver],
       validate: false,
     }),
+    context: ({ req, res }): MyContext => ({ req, res }),
   });
+
+  app.use(
+    session({
+      store: new RedisStore({
+        client: redisClient,
+        disableTTL: true,
+        disableTouch: true,
+      }),
+      cookie: {
+        maxAge: 1000 * 60 * 60 * 24 * 365,
+        httpOnly: true,
+        secure: false,
+      },
+      secret: 'some secrect',
+      resave: false,
+      name: 'vlogger',
+      saveUninitialized: false,
+    })
+  );
 
   // app.use(
   //   cors({
@@ -62,8 +70,6 @@ const main = async () => {
   // );
 
   apolloServer.applyMiddleware({ app });
-  const id = v4();
-  console.log(id);
 
   app.listen(4000, () => console.info('Server is running on PORT 4000'));
 };
