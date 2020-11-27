@@ -2,6 +2,8 @@ import 'reflect-metadata';
 import { ApolloServer } from 'apollo-server-express';
 import { buildSchema } from 'type-graphql';
 import { createConnection } from 'typeorm';
+import cors from 'cors';
+
 import { MyContext } from './types';
 
 // Resolvers
@@ -28,6 +30,13 @@ const main = async () => {
     console.log(`retries left: ${retries}`);
     await new Promise((res) => setTimeout(res, 4000));
   }
+
+  app.use(
+    cors({
+      origin: 'http://localhost:3000',
+      credentials: true,
+    })
+  );
 
   const RedisStore = connectRedis(session);
   const redisClient = redis.createClient({
@@ -62,14 +71,7 @@ const main = async () => {
     context: ({ req, res }): MyContext => ({ req, res }),
   });
 
-  // app.use(
-  //   cors({
-  //     origin: (origin, cb) => cb(null, true),
-  //     credentials: true,
-  //   })
-  // );
-
-  apolloServer.applyMiddleware({ app });
+  apolloServer.applyMiddleware({ app, cors: false });
 
   app.listen(4000, () => console.info('Server is running on PORT 4000'));
 };
