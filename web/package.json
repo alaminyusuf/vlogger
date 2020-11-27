@@ -11,6 +11,7 @@
     "@chakra-ui/react": "^1.0.0",
     "@emotion/react": "^11.0.0",
     "@emotion/styled": "^11.0.0",
+    "@graphql-codegen/cli": "^1.19.3",
     "emotion-theming": "^11.0.0",
     "formik": "^2.2.5",
     "framer-motion": "^2.9.4",
