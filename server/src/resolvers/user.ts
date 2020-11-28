@@ -71,6 +71,17 @@ export class UserResolver {
       };
     }
 
+    if (email.length <= 2) {
+      return {
+        errors: [
+          {
+            field: 'email',
+            message: 'invlid email',
+          },
+        ],
+      };
+    }
+
     if (password.length <= 5) {
       return {
         errors: [
