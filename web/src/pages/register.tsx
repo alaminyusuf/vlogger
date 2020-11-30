@@ -5,7 +5,7 @@ import Wrapper from '../components/Container';
 import InputField from '../components/InputField';
 import { useRouter } from 'next/router';
 import { useRegisterMutation } from '../generated/graphql';
-import { errorMapUtil } from '../src/errorMapUtil';
+import { errorMapUtil } from '../utils/errorMapUtil';
 
 const Register = ({}) => {
   const router = useRouter();
