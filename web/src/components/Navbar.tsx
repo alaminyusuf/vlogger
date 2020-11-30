@@ -32,7 +32,7 @@ const Navbar: React.FC<navbarProp> = ({}) => {
     );
   }
   return (
-    <Flex bg='tomato' py={4}>
+    <Flex bg='tan' py={5}>
       <Box ml='auto'>{body}</Box>
     </Flex>
   );
