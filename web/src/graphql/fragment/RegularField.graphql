@@ -1,4 +1,4 @@
-Fragment RegularField on User {
+fragment RegularField on User {
   id
   username
 }
