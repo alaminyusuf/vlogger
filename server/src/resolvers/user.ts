@@ -191,4 +191,19 @@ export class UserResolver {
       user,
     };
   }
+
+  @Mutation(() => Boolean)
+  logout(@Ctx() { req, res }: MyContext): Promise<boolean> {
+    res.clearCookie('vlogger');
+    return new Promise((resolve) =>
+      req.session.destroy((err: any) => {
+        if (err) {
+          console.log(err);
+          resolve(false);
+          return;
+        }
+        resolve(true);
+      })
+    );
+  }
 }
