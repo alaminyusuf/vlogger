@@ -6,6 +6,8 @@ import InputField from '../components/InputField';
 import { useRouter } from 'next/router';
 import { useRegisterMutation } from '../generated/graphql';
 import { errorMapUtil } from '../utils/errorMapUtil';
+import { withUrqlClient } from 'next-urql';
+import { createUrqlClient } from '../utils/createUrqlClient';
 
 const Register = ({}) => {
   const router = useRouter();
@@ -63,4 +65,4 @@ const Register = ({}) => {
   );
 };
 
-export default Register;
+export default withUrqlClient(createUrqlClient)(Register);
