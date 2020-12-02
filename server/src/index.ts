@@ -15,8 +15,10 @@ import connectRedis from 'connect-redis';
 import express from 'express';
 import redis from 'redis';
 import session from 'express-session';
+import { sendEmail } from './utils/emailUtil';
 
 const main = async () => {
+  sendEmail('bob@bob.com', 'Hola!');
   const app = express();
 
   let retries = 5;
