@@ -16,6 +16,8 @@ export type Scalars = {
 
 export type Query = {
   __typename?: 'Query';
+  posts: Array<Post>;
+  post?: Maybe<Post>;
   hello: Scalars['String'];
   me?: Maybe<User>;
   users: Array<User>;
@@ -23,8 +25,21 @@ export type Query = {
 };
 
 
+export type QueryPostArgs = {
+  title: Scalars['String'];
+};
+
+
 export type QueryUserArgs = {
   username: Scalars['String'];
+};
+
+export type Post = {
+  __typename?: 'Post';
+  id: Scalars['Int'];
+  title: Scalars['String'];
+  content: Scalars['String'];
+  author: Scalars['String'];
 };
 
 export type User = {
@@ -36,11 +51,19 @@ export type User = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  add: Post;
   register: UserResponse;
   updateUser: User;
   deleteUser: Scalars['Boolean'];
   login: UserResponse;
   logout: Scalars['Boolean'];
+};
+
+
+export type MutationAddArgs = {
+  title: Scalars['String'];
+  content: Scalars['String'];
+  author: Scalars['String'];
 };
 
 
@@ -80,6 +103,11 @@ export type FieldError = {
   field: Scalars['String'];
   message: Scalars['String'];
 };
+
+export type PostFragmentFragment = (
+  { __typename?: 'Post' }
+  & Pick<Post, 'id' | 'title' | 'content' | 'author'>
+);
 
 export type RegularFieldFragment = (
   { __typename?: 'User' }
@@ -146,6 +174,25 @@ export type MeQuery = (
   )> }
 );
 
+export type PostsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type PostsQuery = (
+  { __typename?: 'Query' }
+  & { posts: Array<(
+    { __typename?: 'Post' }
+    & PostFragmentFragment
+  )> }
+);
+
+export const PostFragmentFragmentDoc = gql`
+    fragment PostFragment on Post {
+  id
+  title
+  content
+  author
+}
+    `;
 export const RegularFieldFragmentDoc = gql`
     fragment RegularField on User {
   id
@@ -205,4 +252,15 @@ export const MeDocument = gql`
 
 export function useMeQuery(options: Omit<Urql.UseQueryArgs<MeQueryVariables>, 'query'> = {}) {
   return Urql.useQuery<MeQuery>({ query: MeDocument, ...options });
+};
+export const PostsDocument = gql`
+    query Posts {
+  posts {
+    ...PostFragment
+  }
+}
+    ${PostFragmentFragmentDoc}`;
+
+export function usePostsQuery(options: Omit<Urql.UseQueryArgs<PostsQueryVariables>, 'query'> = {}) {
+  return Urql.useQuery<PostsQuery>({ query: PostsDocument, ...options });
 };
