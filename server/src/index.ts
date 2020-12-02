@@ -1,3 +1,4 @@
+import { PostResolver } from './resolvers/post';
 import 'reflect-metadata';
 import { ApolloServer } from 'apollo-server-express';
 import { buildSchema } from 'type-graphql';
@@ -65,7 +66,7 @@ const main = async () => {
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [HelloResolver, UserResolver],
+      resolvers: [HelloResolver, UserResolver, PostResolver],
       validate: false,
     }),
     context: ({ req, res }): MyContext => ({ req, res }),
