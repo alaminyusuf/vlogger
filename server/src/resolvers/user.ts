@@ -1,3 +1,4 @@
+import { validationUtil } from './../utils/validationUtil';
 import { MyContext } from './../types';
 import { User } from './../entity/User';
 import {
@@ -11,6 +12,7 @@ import {
   Ctx,
 } from 'type-graphql';
 import argon2 from 'argon2';
+import { InputOptions } from './InputOptions';
 
 @ObjectType()
 class FieldError {
@@ -32,6 +34,13 @@ class UserResponse {
 
 @Resolver()
 export class UserResolver {
+  @Mutation(() => Boolean)
+  async forgetPassword(@Arg('email', () => String) email: string) {
+    const user = await User.findOne(email);
+    console.log(user);
+    return true;
+  }
+
   @Query(() => User, { nullable: true })
   async me(@Ctx() { req }: MyContext) {
     if (!req.session.userId) return null;
@@ -55,47 +64,18 @@ export class UserResolver {
 
   @Mutation(() => UserResponse)
   async register(
-    @Arg('username', () => String) username: string,
-    @Arg('email', () => String) email: string,
-    @Arg('password', () => String) password: string,
+    @Arg('options', () => InputOptions) options: InputOptions,
     @Ctx() { req }: MyContext
   ): Promise<UserResponse> {
-    if (username.length <= 2) {
-      return {
-        errors: [
-          {
-            field: 'username',
-            message: 'username must be greater than 2',
-          },
-        ],
-      };
-    }
+    const errors = validationUtil(options);
 
-    if (email.length <= 2) {
-      return {
-        errors: [
-          {
-            field: 'email',
-            message: 'invlid email',
-          },
-        ],
-      };
-    }
+    if (errors) return { errors };
 
-    if (password.length <= 5) {
-      return {
-        errors: [
-          {
-            field: 'password',
-            message: 'password must at least be 6',
-          },
-        ],
-      };
-    }
-    const hashedPassword = await argon2.hash(password);
+    const hashedPassword = await argon2.hash(options.password);
+
     const user = await User.create({
-      username,
-      email,
+      username: options.username,
+      email: options.email,
       password: hashedPassword,
     });
 
@@ -156,11 +136,15 @@ export class UserResolver {
 
   @Mutation(() => UserResponse)
   async login(
-    @Arg('username', () => String) username: string,
+    @Arg('usernameOrEmail', () => String) usernameOrEmail: string,
     @Arg('password', () => String) password: string,
     @Ctx() { req }: MyContext
   ): Promise<UserResponse> {
-    const user = await User.findOne({ where: { username } });
+    const user = await User.findOne(
+      usernameOrEmail.includes('@')
+        ? { email: usernameOrEmail }
+        : { username: usernameOrEmail }
+    );
 
     if (!user) {
       return {
