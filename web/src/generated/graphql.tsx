@@ -52,6 +52,7 @@ export type User = {
 export type Mutation = {
   __typename?: 'Mutation';
   add: Post;
+  forgetPassword: Scalars['Boolean'];
   register: UserResponse;
   updateUser: User;
   deleteUser: Scalars['Boolean'];
@@ -67,10 +68,13 @@ export type MutationAddArgs = {
 };
 
 
-export type MutationRegisterArgs = {
-  password: Scalars['String'];
+export type MutationForgetPasswordArgs = {
   email: Scalars['String'];
-  username: Scalars['String'];
+};
+
+
+export type MutationRegisterArgs = {
+  options: InputOptions;
 };
 
 
@@ -89,7 +93,7 @@ export type MutationDeleteUserArgs = {
 
 export type MutationLoginArgs = {
   password: Scalars['String'];
-  username: Scalars['String'];
+  usernameOrEmail: Scalars['String'];
 };
 
 export type UserResponse = {
@@ -104,6 +108,12 @@ export type FieldError = {
   message: Scalars['String'];
 };
 
+export type InputOptions = {
+  password: Scalars['String'];
+  email: Scalars['String'];
+  username: Scalars['String'];
+};
+
 export type PostFragmentFragment = (
   { __typename?: 'Post' }
   & Pick<Post, 'id' | 'title' | 'content' | 'author'>
@@ -115,7 +125,7 @@ export type RegularFieldFragment = (
 );
 
 export type LoginMutationVariables = Exact<{
-  username: Scalars['String'];
+  usernameOrEmail: Scalars['String'];
   password: Scalars['String'];
 }>;
 
@@ -200,8 +210,8 @@ export const RegularFieldFragmentDoc = gql`
 }
     `;
 export const LoginDocument = gql`
-    mutation Login($username: String!, $password: String!) {
-  login(username: $username, password: $password) {
+    mutation Login($usernameOrEmail: String!, $password: String!) {
+  login(usernameOrEmail: $usernameOrEmail, password: $password) {
     errors {
       field
       message
@@ -227,7 +237,7 @@ export function useLogoutMutation() {
 };
 export const RegisterDocument = gql`
     mutation Register($username: String!, $email: String!, $password: String!) {
-  register(username: $username, email: $email, password: $password) {
+  register(options: {username: $username, email: $email, password: $password}) {
     errors {
       field
       message
