@@ -35,6 +35,56 @@ class UserResponse {
 
 @Resolver()
 export class UserResolver {
+  @Mutation(() => UserResponse)
+  async changePassword(
+    @Arg('token', () => String) token: string,
+    @Arg('newPassword', () => String) newPassword: string,
+    @Ctx() { redis, req }: MyContext
+  ): Promise<UserResponse> {
+    if (newPassword.length <= 5) {
+      return {
+        errors: [
+          {
+            field: 'New password',
+            message: 'password must at least be 6',
+          },
+        ],
+      };
+    }
+    const userId = await redis.get('FORGET_PASSWORD' + token);
+
+    if (!userId) {
+      return {
+        errors: [
+          {
+            field: 'New Password',
+            message: 'Token no longer exits',
+          },
+        ],
+      };
+    }
+
+    const user = await User.findOne({ where: { id: userId } });
+
+    if (!user) {
+      return {
+        errors: [
+          {
+            field: 'token',
+            message: 'user no longer exist',
+          },
+        ],
+      };
+    }
+
+    user.password = await argon2.hash(newPassword);
+    await user.save();
+    req.session.id = user.id;
+    return {
+      user,
+    };
+  }
+
   @Mutation(() => Boolean)
   async forgetPassword(
     @Arg('email', () => String) email: string,
@@ -153,11 +203,11 @@ export class UserResolver {
     @Arg('password', () => String) password: string,
     @Ctx() { req }: MyContext
   ): Promise<UserResponse> {
-    const user = await User.findOne(
-      usernameOrEmail.includes('@')
+    const user = await User.findOne({
+      where: usernameOrEmail.includes('@')
         ? { email: usernameOrEmail }
-        : { username: usernameOrEmail }
-    );
+        : { username: usernameOrEmail },
+    });
 
     if (!user) {
       return {
