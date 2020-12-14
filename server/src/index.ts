@@ -13,7 +13,7 @@ import { UserResolver } from './resolvers/user';
 
 import connectRedis from 'connect-redis';
 import express from 'express';
-import redis from 'redis';
+import Redis from 'ioredis';
 import session from 'express-session';
 
 const main = async () => {
@@ -40,7 +40,7 @@ const main = async () => {
   );
 
   const RedisStore = connectRedis(session);
-  const redisClient = redis.createClient({
+  const redis = new Redis({
     host: 'redis-service',
     port: 6379,
   });
@@ -48,7 +48,7 @@ const main = async () => {
   app.use(
     session({
       store: new RedisStore({
-        client: redisClient,
+        client: redis,
         disableTTL: true,
         disableTouch: true,
       }),
@@ -69,7 +69,7 @@ const main = async () => {
       resolvers: [HelloResolver, UserResolver, PostResolver],
       validate: false,
     }),
-    context: ({ req, res }): MyContext => ({ req, res }),
+    context: ({ req, res }): MyContext => ({ req, res, redis }),
   });
 
   apolloServer.applyMiddleware({ app, cors: false });

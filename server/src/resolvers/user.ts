@@ -8,11 +8,12 @@ import {
   Resolver,
   ObjectType,
   Field,
-  Int,
   Ctx,
 } from 'type-graphql';
 import argon2 from 'argon2';
 import { InputOptions } from './InputOptions';
+import { v4 } from 'uuid';
+import { sendEmail } from '../utils/emailUtil';
 
 @ObjectType()
 class FieldError {
@@ -35,9 +36,21 @@ class UserResponse {
 @Resolver()
 export class UserResolver {
   @Mutation(() => Boolean)
-  async forgetPassword(@Arg('email', () => String) email: string) {
-    const user = await User.findOne(email);
-    console.log(user);
+  async forgetPassword(
+    @Arg('email', () => String) email: string,
+    @Ctx() { redis }: MyContext
+  ) {
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      return true;
+    }
+    const token = v4();
+
+    await sendEmail(
+      email,
+      `<a href="http:localhost:3000/change-password/${token}">reset password</a>`
+    );
+    redis.set('FORGET_PASSWORD' + token, user.id, 'ex', 1000 * 60 * 60 * 30);
     return true;
   }
 
@@ -98,35 +111,35 @@ export class UserResolver {
     return { user };
   }
 
-  @Mutation(() => User)
-  async updateUser(
-    @Arg('id', () => Int) id: number,
-    @Arg('username', () => String, { nullable: true }) username: string,
-    @Arg('email', () => String, { nullable: true }) email: string,
-    @Arg('password', () => String, { nullable: true }) password: string
-  ): Promise<User | undefined> {
-    const user = await User.findOne(id);
+  // @Mutation(() => User)
+  // async updateUser(
+  //   @Arg('id', () => Int) id: number,
+  //   @Arg('username', () => String, { nullable: true }) username: string,
+  //   @Arg('email', () => String, { nullable: true }) email: string,
+  //   @Arg('password', () => String, { nullable: true }) password: string
+  // ): Promise<User | undefined> {
+  //   const user = await User.findOne(id);
 
-    if (!user) return undefined;
+  //   if (!user) return undefined;
 
-    if (typeof username !== 'undefined') {
-      user.username = username;
-      await User.update({ id }, { username });
-    }
+  //   if (typeof username !== 'undefined') {
+  //     user.username = username;
+  //     await User.update({ id }, { username });
+  //   }
 
-    if (typeof password !== 'undefined') {
-      user.password = password;
-      const hashedPassword = await argon2.hash(password);
-      await User.update({ id }, { password: hashedPassword });
-    }
+  //   if (typeof password !== 'undefined') {
+  //     user.password = password;
+  //     const hashedPassword = await argon2.hash(password);
+  //     await User.update({ id }, { password: hashedPassword });
+  //   }
 
-    if (typeof email !== 'undefined') {
-      user.email = email;
-      await User.update({ id }, { email });
-    }
+  //   if (typeof email !== 'undefined') {
+  //     user.email = email;
+  //     await User.update({ id }, { email });
+  //   }
 
-    return user;
-  }
+  //   return user;
+  // }
 
   @Mutation(() => Boolean)
   async deleteUser(@Arg('id', () => String) id: string): Promise<boolean> {
