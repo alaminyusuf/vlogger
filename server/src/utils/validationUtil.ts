@@ -23,7 +23,7 @@ export const validationUtil = (options: InputOptions) => {
     return [
       {
         field: 'email',
-        message: 'invlid email',
+        message: 'invalid email',
       },
     ];
   }

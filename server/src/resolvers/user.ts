@@ -51,7 +51,7 @@ export class UserResolver {
         ],
       };
     }
-    const userId = await redis.get('FORGET_PASSWORD' + token);
+    const userId = await redis.get(`FORGET_PASSWORD${token}`);
 
     if (!userId) {
       return {
@@ -71,7 +71,7 @@ export class UserResolver {
         errors: [
           {
             field: 'token',
-            message: 'user no longer exist',
+            message: 'user no longer exists',
           },
         ],
       };
@@ -79,7 +79,7 @@ export class UserResolver {
 
     user.password = await argon2.hash(newPassword);
     await user.save();
-    req.session.id = user.id;
+    req.session.userId = user.id;
     return {
       user,
     };
@@ -100,7 +100,7 @@ export class UserResolver {
       email,
       `<a href="http:localhost:3000/change-password/${token}">reset password</a>`
     );
-    redis.set('FORGET_PASSWORD' + token, user.id, 'ex', 1000 * 60 * 60 * 30);
+    redis.set(`FORGET_PASSWORD${token}`, user.id, 'ex', 1000 * 60 * 60 * 30);
     return true;
   }
 
