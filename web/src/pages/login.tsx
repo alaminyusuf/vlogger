@@ -20,7 +20,7 @@ const Login: React.FC = ({}) => {
         initialValues={{ usernameOrEmail: '', password: '' }}
         onSubmit={async ({ usernameOrEmail, password }, { setErrors }) => {
           const response = await login({ usernameOrEmail, password });
-          console.log(response.data);
+          console.log(response);
           if (response.data?.login.errors) {
             setErrors(errorMapUtil(response.data.login.errors));
           } else if (response.data?.login.user) {
@@ -31,7 +31,7 @@ const Login: React.FC = ({}) => {
         {({ isSubmitting }) => (
           <Form>
             <InputField
-              name='username'
+              name='usernameOrEmail'
               label='Username or Email'
               placeholder='username or email'
             />
