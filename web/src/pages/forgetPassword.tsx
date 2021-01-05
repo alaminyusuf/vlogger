@@ -1,66 +1,51 @@
 import * as React from 'react';
-import { NextPage } from 'next';
-import { useRouter } from 'next/router';
 import { Formik, Form } from 'formik';
 import { Box, Button } from '@chakra-ui/react';
 import Wrapper from '../components/Container';
 import InputField from '../components/InputField';
-import { useChangePasswordMutation } from '../generated/graphql';
-// import { errorMapUtil } from '../utils/errorMapUtil';
+import { useForgetPasswordMutation } from '../generated/graphql';
 import { withUrqlClient } from 'next-urql';
 import { createUrqlClient } from '../utils/createUrqlClient';
 
-const ChangePassword: React.FC = ({}) => {
-  const router = useRouter();
-  const [, changePassword] = useChangePasswordMutation();
+const ForgotPassword: React.FC<{}> = ({}) => {
+  const [complete, setComplete] = React.useState(false);
+  const [, forgotPassword] = useForgetPasswordMutation();
   return (
     <Wrapper variant='small'>
       <Formik
-        initialValues={{ newPassword: '' }}
-        onSubmit={async (values) => {
-          // const response = await changePassword({
-          //   newPassword: values.newPassword,
-          // });
-          // if (response.data?.changePassword.errors) {
-          //   const errorMap = errorMapUtil(response.data.changePassword.errors);
-          //   if ('token' in errorMap) {
-          //     setTokenError(errorMap.token);
-          //   }
-          //   setErrors(errorMap);
-          // } else if (response.data?.changePassword.user) {
-          //   router.push('/');
-          // }
+        initialValues={{ email: '' }}
+        onSubmit={async ({ email }) => {
+          await forgotPassword({ email });
+          setComplete(true);
         }}
       >
-        {({ isSubmitting }) => (
-          <Form>
-            <InputField
-              name='email'
-              label='Email'
-              placeholder='Email'
-              type='email'
-            />
-            <Button
-              type='submit'
-              mt={4}
-              isLoading={isSubmitting}
-              colorScheme='teal'
-            >
-              Forget Password
-            </Button>
-          </Form>
-        )}
+        {({ isSubmitting }) =>
+          complete ? (
+            <Box>
+              if an account with that email exists, we sent you can email
+            </Box>
+          ) : (
+            <Form>
+              <InputField
+                name='email'
+                placeholder='email'
+                label='Email'
+                type='email'
+              />
+              <Button
+                mt={4}
+                type='submit'
+                isLoading={isSubmitting}
+                variantColor='teal'
+              >
+                forgot password
+              </Button>
+            </Form>
+          )
+        }
       </Formik>
     </Wrapper>
   );
 };
 
-ChangePassword.getInitialProps = ({ query }) => {
-  return {
-    token: query.token as string,
-  };
-};
-
-// export default ChangePassword;
-
-export default withUrqlClient(createUrqlClient)(ChangePassword);
+export default withUrqlClient(createUrqlClient)(ForgotPassword);
