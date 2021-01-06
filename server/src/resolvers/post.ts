@@ -1,4 +1,4 @@
-import { Arg, Mutation, ObjectType, Query } from 'type-graphql';
+import { Arg, ObjectType, Query } from 'type-graphql';
 import { Post } from '../entity/Post';
 
 @ObjectType()
@@ -15,17 +15,17 @@ export class PostResolver {
     return await Post.findOne({ where: { title } });
   }
 
-  @Mutation(() => Post)
-  add(
-    @Arg('author', () => String) author: string,
-    @Arg('content', () => String) content: string,
-    @Arg('title', () => String) title: string
-  ): Promise<Post> {
-    const post = Post.create({
-      author,
-      content,
-      title,
-    }).save();
-    return post;
-  }
+  //   @Mutation(() => Post)
+  //   add(
+  //     @Arg('author', () => String) author: string,
+  //     @Arg('content', () => String) content: string,
+  //     @Arg('title', () => String) title: string
+  //   ): Promise<Post> {
+  //     const post = Post.create({
+  //       author,
+  //       content,
+  //       title,
+  //     }).save();
+  //     return post;
+  //   }
 }

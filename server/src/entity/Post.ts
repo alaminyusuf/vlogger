@@ -3,17 +3,39 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Field, Int, ObjectType } from 'type-graphql';
+import { User } from './User';
 
 @ObjectType()
 @Entity()
 export class Post extends BaseEntity {
   @Field(() => Int)
   @PrimaryGeneratedColumn({ type: 'int' })
-  public id: number;
+  public id!: number;
+
+  @Field(() => String)
+  @ManyToOne(() => User, (user) => user.posts)
+  public author!: User;
+
+  @Field(() => Int)
+  @Column()
+  public authorId!: number;
+
+  @Field(() => String)
+  @Column({ nullable: false })
+  public content!: string;
+
+  @Field(() => String)
+  @Column({ default: 0, type: 'int' })
+  public points!: number;
+
+  @Field(() => String)
+  @Column({ nullable: false })
+  public title!: string;
 
   @Field(() => String)
   @CreateDateColumn()
@@ -22,16 +44,4 @@ export class Post extends BaseEntity {
   @Field(() => String)
   @UpdateDateColumn()
   public updatedAt: Date;
-
-  @Field(() => String)
-  @Column({ nullable: false, type: 'varchar' })
-  public title: string;
-
-  @Field(() => String)
-  @Column({ nullable: false, type: 'varchar' })
-  public content: string;
-
-  @Field(() => String)
-  @Column({ nullable: false, type: 'varchar' })
-  public author: string;
 }
