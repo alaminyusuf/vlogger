@@ -64,7 +64,8 @@ export class UserResolver {
       };
     }
 
-    const user = await User.findOne({ where: { id: userId } });
+    const userIdNum = parseInt(userId);
+    const user = await User.findOne(userIdNum);
 
     if (!user) {
       return {
@@ -77,8 +78,14 @@ export class UserResolver {
       };
     }
 
-    user.password = await argon2.hash(newPassword);
-    await user.save();
+    await User.update(
+      {
+        id: userIdNum,
+      },
+      {
+        password: await argon2.hash(newPassword),
+      }
+    );
     req.session.userId = user.id;
     return {
       user,
