@@ -14,6 +14,7 @@ import argon2 from 'argon2';
 import { InputOptions } from './InputOptions';
 import { v4 } from 'uuid';
 import { sendEmail } from '../utils/emailUtil';
+import { getConnection } from 'typeorm';
 
 @ObjectType()
 class FieldError {
@@ -137,20 +138,25 @@ export class UserResolver {
     @Arg('options', () => InputOptions) options: InputOptions,
     @Ctx() { req }: MyContext
   ): Promise<UserResponse> {
+    let user;
     const errors = validationUtil(options);
 
     if (errors) return { errors };
 
     const hashedPassword = await argon2.hash(options.password);
-
-    const user = await User.create({
-      username: options.username,
-      email: options.email,
-      password: hashedPassword,
-    });
-
     try {
-      await user.save();
+      const result = await getConnection()
+        .createQueryBuilder()
+        .insert()
+        .into(User)
+        .values({
+          username: options.username,
+          email: options.email,
+          password: hashedPassword,
+        })
+        .returning('*')
+        .execute();
+      user = result.raw[0];
     } catch (err) {
       if (err.code == '23505') {
         return {
