@@ -1,4 +1,11 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { Field, Int, ObjectType } from 'type-graphql';
 
 @ObjectType()
@@ -7,6 +14,14 @@ export class User extends BaseEntity {
   @Field(() => Int)
   @PrimaryGeneratedColumn({ type: 'int' })
   public id: number;
+
+  @Field(() => String)
+  @CreateDateColumn()
+  public createdAt: Date;
+
+  @Field(() => String)
+  @UpdateDateColumn()
+  public updatedAt: Date;
 
   @Field(() => String)
   @Column({ nullable: false, type: 'varchar', unique: true })
