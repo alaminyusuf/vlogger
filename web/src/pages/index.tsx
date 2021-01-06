@@ -19,8 +19,8 @@ const Index = () => {
       ) : (
         data.posts.map((post) => {
           return (
-            <ul>
-              <li key={post.id}>{post.title}</li>
+            <ul key={post.id}>
+              <li>{post.content}</li>
             </ul>
           );
         })
