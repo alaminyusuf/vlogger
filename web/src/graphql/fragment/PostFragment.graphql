@@ -3,4 +3,5 @@ fragment PostFragment on Post {
   title
   content
   author
+  points
 }
