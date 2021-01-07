@@ -1,5 +1,23 @@
-import { Arg, ObjectType, Query } from 'type-graphql';
+import { MyContext } from './../types';
+import {
+  Arg,
+  ObjectType,
+  Query,
+  InputType,
+  Field,
+  Mutation,
+  Ctx,
+} from 'type-graphql';
 import { Post } from '../entity/Post';
+
+@InputType()
+class PostInput {
+  @Field(() => String)
+  content: string;
+
+  @Field(() => String)
+  title: string;
+}
 
 @ObjectType()
 export class PostResolver {
@@ -15,17 +33,18 @@ export class PostResolver {
     return await Post.findOne({ where: { title } });
   }
 
-  //   @Mutation(() => Post)
-  //   add(
-  //     @Arg('author', () => String) author: string,
-  //     @Arg('content', () => String) content: string,
-  //     @Arg('title', () => String) title: string
-  //   ): Promise<Post> {
-  //     const post = Post.create({
-  //       author,
-  //       content,
-  //       title,
-  //     }).save();
-  //     return post;
-  //   }
+  @Mutation(() => Post)
+  async createPost(
+    @Arg('options', () => PostInput) options: PostInput,
+    @Ctx() { req }: MyContext
+  ): Promise<Post> {
+    if (!req.session.userId) {
+      throw new Error('Not authenticated!!');
+    }
+
+    return await Post.create({
+      ...options,
+      authorId: req.session.userId,
+    }).save();
+  }
 }
