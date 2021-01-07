@@ -25,7 +25,10 @@ const CreatePost = () => {
       <Formik
         initialValues={{ title: '', content: '' }}
         onSubmit={async (values) => {
-          await createPost({ options: values });
+          const { error } = await createPost({ options: values });
+          if (!error) {
+            router.push('/');
+          }
         }}
       >
         {({ isSubmitting }) => (

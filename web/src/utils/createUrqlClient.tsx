@@ -15,7 +15,7 @@ const errorExchange: Exchange = ({ forward }) => (ops$) =>
   pipe(
     forward(ops$),
     tap(({ error }) => {
-      if (error?.message.includes('not authenticated')) {
+      if (error?.message.includes('Not authenticated')) {
         Router.replace('/login');
       }
     })
