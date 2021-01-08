@@ -9,6 +9,7 @@ import NextLink from 'next/link';
 
 const Index = () => {
   const [{ data }] = usePostsQuery();
+
   return (
     <>
       <Head>
@@ -23,11 +24,7 @@ const Index = () => {
           <div>Loading...</div>
         ) : (
           data.posts.map((post) => {
-            return (
-              <ul key={post.id}>
-                <li>{post.content}</li>
-              </ul>
-            );
+            return <div key={post.id}>{post.title}</div>;
           })
         )}
       </Layout>

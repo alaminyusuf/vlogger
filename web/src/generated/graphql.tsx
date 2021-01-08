@@ -129,7 +129,7 @@ export type ErrorFieldFragment = (
 
 export type PostFragmentFragment = (
   { __typename?: 'Post' }
-  & Pick<Post, 'id' | 'title' | 'content' | 'author' | 'points'>
+  & Pick<Post, 'id' | 'title' | 'content' | 'points'>
 );
 
 export type RegularFieldFragment = (
@@ -249,7 +249,6 @@ export const PostFragmentFragmentDoc = gql`
   id
   title
   content
-  author
   points
 }
     `;
