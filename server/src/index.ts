@@ -1,5 +1,5 @@
-import { PostResolver } from './resolvers/post';
 import 'reflect-metadata';
+import { PostResolver } from './resolvers/post';
 import { ApolloServer } from 'apollo-server-express';
 import { buildSchema } from 'type-graphql';
 import { createConnection } from 'typeorm';

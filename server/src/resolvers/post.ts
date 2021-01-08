@@ -9,8 +9,10 @@ import {
   Mutation,
   Ctx,
   UseMiddleware,
+  Int,
 } from 'type-graphql';
 import { Post } from '../entity/Post';
+import { getConnection } from 'typeorm';
 
 @InputType()
 class PostInput {
@@ -24,7 +26,16 @@ class PostInput {
 @ObjectType()
 export class PostResolver {
   @Query(() => [Post])
-  async posts(): Promise<Post[] | undefined> {
+  async posts(
+    @Arg('limit', () => Int) limit: number,
+    @Arg('cursor', () => String, { nullable: true }) cursor: string | null
+  ): Promise<Post[] | undefined> {
+    getConnection()
+      .getRepository(Post)
+      .createQueryBuilder('posts')
+      // .where('')
+      .orderBy('"createdAt"')
+      .getMany();
     return await Post.find();
   }
 
@@ -41,8 +52,6 @@ export class PostResolver {
     @Arg('options', () => PostInput) options: PostInput,
     @Ctx() { req }: MyContext
   ): Promise<Post> {
-    console.log(req.session);
-
     return await Post.create({
       ...options,
       authorId: req.session.userId,
