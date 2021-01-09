@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { PostResolver } from './resolvers/post';
 import { ApolloServer } from 'apollo-server-express';
 import { buildSchema } from 'type-graphql';
-import { createConnection } from 'typeorm';
+import { createConnection, getConnection } from 'typeorm';
 import cors from 'cors';
 
 import { MyContext } from './types';
@@ -31,6 +31,10 @@ const main = async () => {
     console.log(`retries left: ${retries}`);
     await new Promise((res) => setTimeout(res, 4000));
   }
+
+  const conn = getConnection();
+
+  await conn.runMigrations();
 
   app.use(
     cors({
