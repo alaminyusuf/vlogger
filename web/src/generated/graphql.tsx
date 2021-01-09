@@ -50,6 +50,7 @@ export type Post = {
   title: Scalars['String'];
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
+  textSnippet: Scalars['String'];
 };
 
 export type User = {
@@ -135,7 +136,7 @@ export type ErrorFieldFragment = (
 
 export type PostFragmentFragment = (
   { __typename?: 'Post' }
-  & Pick<Post, 'id' | 'title' | 'content' | 'points'>
+  & Pick<Post, 'id' | 'title' | 'textSnippet' | 'points'>
 );
 
 export type RegularFieldFragment = (
@@ -257,7 +258,7 @@ export const PostFragmentFragmentDoc = gql`
     fragment PostFragment on Post {
   id
   title
-  content
+  textSnippet
   points
 }
     `;
