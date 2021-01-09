@@ -2,7 +2,6 @@ import { isAuth } from './../middleware/isAuth';
 import { MyContext } from './../types';
 import {
   Arg,
-  ObjectType,
   Query,
   InputType,
   Field,
@@ -10,6 +9,9 @@ import {
   Ctx,
   UseMiddleware,
   Int,
+  Resolver,
+  FieldResolver,
+  Root,
 } from 'type-graphql';
 import { Post } from '../entity/Post';
 import { getConnection } from 'typeorm';
@@ -23,8 +25,13 @@ class PostInput {
   title: string;
 }
 
-@ObjectType()
+@Resolver(Post)
 export class PostResolver {
+  @FieldResolver(() => String)
+  textSnippet(@Root() root: Post) {
+    return root.content.slice(0, 65);
+  }
+
   @Query(() => [Post])
   async posts(
     @Arg('limit', () => Int) limit: number,
