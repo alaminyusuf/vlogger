@@ -5,7 +5,7 @@ import {
   stringifyVariables,
 } from 'urql';
 import { betterUpdateQuery } from './betterUpdateQuery';
-import { cacheExchange, Resolver, Variables } from '@urql/exchange-graphcache';
+import { cacheExchange, Resolver } from '@urql/exchange-graphcache';
 import {
   LoginMutation,
   LogoutMutation,
@@ -38,7 +38,7 @@ const cursorPagination = (): Resolver => {
 
     const fieldKey = `${fieldName}(${stringifyVariables(fieldArgs)})`;
     const isItInTheCache = cache.resolveFieldByKey(entityKey, fieldKey);
-    info.partial = !!isItInTheCache;
+    info.partial = !isItInTheCache;
     const results: string[] = [];
     fieldInfos.forEach((fi) => {
       const data = cache.resolveFieldByKey(entityKey, fi.fieldKey) as string[];
