@@ -3,4 +3,6 @@ fragment PostFragment on Post {
   title
   textSnippet
   points
+  createdAt
+  updatedAt
 }
