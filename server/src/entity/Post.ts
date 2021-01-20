@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { Field, Int, ObjectType } from 'type-graphql';
 import { User } from './User';
+import { Updoot } from './Updoot';
 
 @ObjectType()
 @Entity()
@@ -36,6 +37,9 @@ export class Post extends BaseEntity {
   @Field(() => String)
   @Column({ nullable: false })
   public title!: string;
+
+  @ManyToOne(() => Updoot, (updoot) => updoot.post)
+  public updoot: Updoot[];
 
   @Field(() => String)
   @CreateDateColumn()

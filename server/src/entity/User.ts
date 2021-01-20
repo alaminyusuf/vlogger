@@ -1,9 +1,11 @@
+import { Updoot } from './Updoot';
 import { Post } from './Post';
 import {
   BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -31,6 +33,9 @@ export class User extends BaseEntity {
 
   @Column({ nullable: false })
   public password!: string;
+
+  @ManyToOne(() => Updoot, (updoot) => updoot.user)
+  public updoot: Updoot[];
 
   @Field(() => String)
   @CreateDateColumn()
