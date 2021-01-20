@@ -18,7 +18,7 @@ export class Post extends BaseEntity {
   @PrimaryGeneratedColumn({ type: 'int' })
   public id!: number;
 
-  @Field()
+  @Field(() => User)
   @ManyToOne(() => User, (user) => user.posts)
   public author!: User;
 

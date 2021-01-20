@@ -1,3 +1,4 @@
+import { Updoot } from './../entity/Updoot';
 import { isAuth } from './../middleware/isAuth';
 import { MyContext } from './../types';
 import {
@@ -37,6 +38,35 @@ class PaginatedPosts {
 
 @Resolver(Post)
 export class PostResolver {
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuth)
+  async vote(
+    @Arg('postId', () => Int) postId: number,
+    @Arg('value', () => Int) value: number,
+    @Ctx() { req }: MyContext
+  ) {
+    const isUpdoot = value !== -1;
+    const val = isUpdoot ? 1 : -1;
+    const { userId } = req.session;
+    await Updoot.insert({
+      postId,
+      userId,
+      value: val,
+    });
+    await getConnection().query(
+      `
+      START TRANSACTION;
+      
+      update post
+      set points = points + ${val}
+      where id = ${postId};
+
+      COMMIT;
+    `
+    );
+    return true;
+  }
+
   @FieldResolver(() => String)
   textSnippet(@Root() root: Post) {
     return root.content.slice(0, 65);
@@ -73,21 +103,6 @@ export class PostResolver {
       replacements
     );
 
-    // const qb = getConnection()
-    //   .getRepository(Post)
-    //   .createQueryBuilder('post')
-    //   .innerJoinAndSelect('post.author', 'user', '"user.id = post.authorId"')
-    //   .orderBy('post."createdAt"', 'DESC')
-    //   .take(realLimmitPusOne);
-    // if (cursor) {
-    //   qb.where('post."createdAt" < :cursor', {
-    //     cursor: new Date(parseInt(cursor)),
-    //   });
-    // }
-
-    // const posts = await qb.getMany();
-    console.log(posts);
-
     return {
       posts: posts.slice(0, realLimmit),
       hasMore: posts.length === realLimmitPusOne,
@@ -95,10 +110,8 @@ export class PostResolver {
   }
 
   @Query(() => Post, { nullable: true })
-  async post(
-    @Arg('title', () => String) title: string
-  ): Promise<Post | undefined> {
-    return await Post.findOne({ where: { title } });
+  async post(@Arg('id', () => Int) id: number): Promise<Post | undefined> {
+    return await Post.findOne(id);
   }
 
   @Mutation(() => Post)
