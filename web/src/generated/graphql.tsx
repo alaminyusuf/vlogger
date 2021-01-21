@@ -32,7 +32,7 @@ export type QueryPostsArgs = {
 
 
 export type QueryPostArgs = {
-  title: Scalars['String'];
+  id: Scalars['Int'];
 };
 
 
@@ -49,7 +49,7 @@ export type PaginatedPosts = {
 export type Post = {
   __typename?: 'Post';
   id: Scalars['Int'];
-  author: Scalars['String'];
+  author: User;
   authorId: Scalars['Int'];
   content: Scalars['String'];
   points: Scalars['String'];
@@ -71,6 +71,7 @@ export type User = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  vote: Scalars['Boolean'];
   createPost: Post;
   changePassword: UserResponse;
   forgetPassword: Scalars['Boolean'];
@@ -78,6 +79,12 @@ export type Mutation = {
   deleteUser: Scalars['Boolean'];
   login: UserResponse;
   logout: Scalars['Boolean'];
+};
+
+
+export type MutationVoteArgs = {
+  value: Scalars['Int'];
+  postId: Scalars['Int'];
 };
 
 
@@ -143,6 +150,10 @@ export type ErrorFieldFragment = (
 export type PostFragmentFragment = (
   { __typename?: 'Post' }
   & Pick<Post, 'id' | 'title' | 'textSnippet' | 'points' | 'createdAt' | 'updatedAt'>
+  & { author: (
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'username'>
+  ) }
 );
 
 export type RegularFieldFragment = (
@@ -272,6 +283,10 @@ export const PostFragmentFragmentDoc = gql`
   points
   createdAt
   updatedAt
+  author {
+    id
+    username
+  }
 }
     `;
 export const ErrorFieldFragmentDoc = gql`

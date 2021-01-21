@@ -5,4 +5,8 @@ fragment PostFragment on Post {
   points
   createdAt
   updatedAt
+  author {
+    id
+    username
+  }
 }
