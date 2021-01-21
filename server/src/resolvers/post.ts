@@ -48,22 +48,48 @@ export class PostResolver {
     const isUpdoot = value !== -1;
     const val = isUpdoot ? 1 : -1;
     const { userId } = req.session;
-    await Updoot.insert({
-      postId,
-      userId,
-      value: val,
-    });
-    await getConnection().query(
-      `
-      START TRANSACTION;
-      
-      update post
-      set points = points + ${val}
-      where id = ${postId};
 
-      COMMIT;
-    `
-    );
+    const updoot = await Updoot.findOne({ where: { postId, userId } });
+
+    if (updoot && updoot.value !== val) {
+      await getConnection().transaction(async (tm) => {
+        await tm.query(
+          `
+          update updoot
+          set value = $1
+          where "postId" = $2 and "userId" = $3
+        `,
+          [val, postId, userId]
+        );
+
+        await tm.query(
+          `
+        update post
+        set points = points + $1
+        where id = $2
+        `,
+          [2 * val, postId]
+        );
+      });
+    } else if (!updoot) {
+      await getConnection().transaction(async (tm) => {
+        await tm.query(
+          `
+        insert into updoot ("userId", "postId", "value")
+        values ($1,$2,$3)
+        `,
+          [userId, postId, val]
+        );
+        await tm.query(
+          `
+        update post
+        set points = points + $1
+        where id = $2
+        `,
+          [val, postId]
+        );
+      });
+    }
     return true;
   }
 
