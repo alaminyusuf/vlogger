@@ -11,7 +11,7 @@ import {
 	Button,
 } from '@chakra-ui/react';
 import { createUrqlClient } from '../utils/createUrqlClient';
-import { PostsQuery, usePostsQuery } from '../generated/graphql';
+import { usePostsQuery } from '../generated/graphql';
 import { Layout } from '../components/Layout';
 
 import NextLink from 'next/link';
