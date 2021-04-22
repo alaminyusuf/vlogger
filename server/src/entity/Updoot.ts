@@ -4,18 +4,18 @@ import { Post } from './Post';
 
 @Entity()
 export class Updoot extends BaseEntity {
-  @Column({ type: 'int' })
-  value: number;
+	@Column({ type: 'int' })
+	value: number;
 
-  @ManyToOne(() => User, (user) => user.updoot)
-  user: number;
+	@ManyToOne(() => User, (user) => user.updoot)
+	user: User;
 
-  @PrimaryColumn()
-  userId: number;
+	@PrimaryColumn()
+	userId: number;
 
-  @ManyToOne(() => Post, (post) => post.updoot)
-  post: Post;
+	@ManyToOne(() => Post, (post) => post.updoot)
+	post: Post;
 
-  @PrimaryColumn()
-  postId: number;
+	@PrimaryColumn()
+	postId: number;
 }
