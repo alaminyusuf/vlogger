@@ -64,7 +64,6 @@ export type User = {
   id: Scalars['Int'];
   username: Scalars['String'];
   email: Scalars['String'];
-  posts: Post;
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
 };
@@ -158,7 +157,7 @@ export type PostFragmentFragment = (
 
 export type RegularFieldFragment = (
   { __typename?: 'User' }
-  & Pick<User, 'id' | 'username'>
+  & Pick<User, 'id' | 'username' | 'email'>
 );
 
 export type UserResponseFragmentFragment = (
@@ -310,6 +309,7 @@ export const RegularFieldFragmentDoc = gql`
     fragment RegularField on User {
   id
   username
+  email
 }
     `;
 export const UserResponseFragmentFragmentDoc = gql`

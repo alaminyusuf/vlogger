@@ -1,4 +1,5 @@
 fragment RegularField on User {
-  id
-  username
+	id
+	username
+	email
 }

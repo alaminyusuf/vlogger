@@ -1,5 +1,4 @@
 import React from 'react';
-import NextLink from 'next/link';
 import { Box, Button, Flex, Link } from '@chakra-ui/react';
 import { useLogoutMutation, useMeQuery } from '../generated/graphql';
 import { isServer } from '../utils/isServer';
@@ -21,12 +20,13 @@ const Navbar: React.FC<navbarProp> = ({}) => {
 	} else if (!data?.me) {
 		body = (
 			<>
-				<NextLink href='/login'>
-					<Link mr={2}>Login</Link>
-				</NextLink>
-				<NextLink href='register'>
-					<Link mr={2}>Register</Link>
-				</NextLink>
+				<Link href='login' mr={2}>
+					Login
+				</Link>
+
+				<Link href='register' mr={2}>
+					Register
+				</Link>
 			</>
 		);
 	} else if (router.pathname === '/profile') {

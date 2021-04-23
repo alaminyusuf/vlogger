@@ -14,7 +14,6 @@ import { createUrqlClient } from '../utils/createUrqlClient';
 import { usePostsQuery } from '../generated/graphql';
 import { Layout } from '../components/Layout';
 
-import NextLink from 'next/link';
 import UpdootComponent from '../components/Updoot';
 
 const Index = () => {
@@ -39,8 +38,8 @@ const Index = () => {
 			<Layout>
 				<Flex>
 					<Heading>Fashionista</Heading>
-					<Link ml='auto'>
-						<NextLink href='create-post'>Create Post</NextLink>
+					<Link href='create-post' ml='auto'>
+						Create Post
 					</Link>
 				</Flex>
 				{!data && fetching ? (

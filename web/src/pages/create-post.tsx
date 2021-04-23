@@ -10,47 +10,46 @@ import { createUrqlClient } from '../utils/createUrqlClient';
 import { useIsAuth } from '../utils/useIsAuth';
 
 const CreatePost = () => {
-  const router = useRouter();
-  useIsAuth();
-  const [, createPost] = useCreatePostMutation();
+	const router = useRouter();
+	useIsAuth();
+	const [, createPost] = useCreatePostMutation();
+	const handleForm = async (values: any) => {
+		console.log(values);
+		const { error } = await createPost({ options: values });
 
-  return (
-    <Layout variant='small'>
-      <Formik
-        initialValues={{ title: '', content: '' }}
-        onSubmit={async (values) => {
-          const { error } = await createPost({ options: values });
-          if (!error) {
-            router.push('/');
-          }
-        }}
-      >
-        {({ isSubmitting }) => (
-          <Form>
-            <InputField name='title' label='Title' placeholder='title' />
-            <Box mt={4}>
-              <InputField
-                name='content'
-                label='Body'
-                placeholder='content...'
-                type='text'
-                textarea
-              />
-            </Box>
+		if (!error) {
+			router.push('/');
+		}
+	};
+	return (
+		<Layout variant='small'>
+			<Formik initialValues={{ title: '', content: '' }} onSubmit={handleForm}>
+				{({ isSubmitting }) => (
+					<Form>
+						<InputField name='title' label='Title' placeholder='title' />
+						<Box mt={4}>
+							<InputField
+								name='content'
+								label='Body'
+								placeholder='content...'
+								type='text'
+								textarea
+							/>
+						</Box>
 
-            <Button
-              type='submit'
-              mt={4}
-              isLoading={isSubmitting}
-              colorScheme='teal'
-            >
-              Create Post
-            </Button>
-          </Form>
-        )}
-      </Formik>
-    </Layout>
-  );
+						<Button
+							type='submit'
+							mt={4}
+							isLoading={isSubmitting}
+							colorScheme='teal'
+						>
+							Create Post
+						</Button>
+					</Form>
+				)}
+			</Formik>
+		</Layout>
+	);
 };
 
 export default withUrqlClient(createUrqlClient)(CreatePost);
