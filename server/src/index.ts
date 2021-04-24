@@ -34,7 +34,7 @@ const main = async () => {
 
 	// const conn = getConnection();
 
-	// await conn.runMigrations();
+	// await conn.relationLoader;
 
 	app.use(
 		cors({

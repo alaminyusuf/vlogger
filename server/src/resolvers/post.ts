@@ -2,118 +2,118 @@ import { Updoot } from './../entity/Updoot';
 import { isAuth } from './../middleware/isAuth';
 import { MyContext } from './../types';
 import {
-  Arg,
-  Query,
-  InputType,
-  Field,
-  Mutation,
-  Ctx,
-  UseMiddleware,
-  Int,
-  Resolver,
-  FieldResolver,
-  Root,
-  ObjectType,
+	Arg,
+	Query,
+	InputType,
+	Field,
+	Mutation,
+	Ctx,
+	UseMiddleware,
+	Int,
+	Resolver,
+	FieldResolver,
+	Root,
+	ObjectType,
 } from 'type-graphql';
 import { Post } from '../entity/Post';
 import { getConnection } from 'typeorm';
 
 @InputType()
 class PostInput {
-  @Field(() => String)
-  content: string;
+	@Field(() => String)
+	content: string;
 
-  @Field(() => String)
-  title: string;
+	@Field(() => String)
+	title: string;
 }
 
 @ObjectType()
 class PaginatedPosts {
-  @Field(() => [Post])
-  posts: Post[];
+	@Field(() => [Post])
+	posts: Post[];
 
-  @Field(() => Boolean)
-  hasMore: boolean;
+	@Field(() => Boolean)
+	hasMore: boolean;
 }
 
 @Resolver(Post)
 export class PostResolver {
-  @Mutation(() => Boolean)
-  @UseMiddleware(isAuth)
-  async vote(
-    @Arg('postId', () => Int) postId: number,
-    @Arg('value', () => Int) value: number,
-    @Ctx() { req }: MyContext
-  ) {
-    const isUpdoot = value !== -1;
-    const val = isUpdoot ? 1 : -1;
-    const { userId } = req.session;
+	@Mutation(() => Boolean)
+	@UseMiddleware(isAuth)
+	async vote(
+		@Arg('postId', () => Int) postId: number,
+		@Arg('value', () => Int) value: number,
+		@Ctx() { req }: MyContext
+	) {
+		const isUpdoot = value !== -1;
+		const val = isUpdoot ? 1 : -1;
+		const { userId } = req.session;
 
-    const updoot = await Updoot.findOne({ where: { postId, userId } });
+		const updoot = await Updoot.findOne({ where: { postId, userId } });
 
-    if (updoot && updoot.value !== val) {
-      await getConnection().transaction(async (tm) => {
-        await tm.query(
-          `
+		if (updoot && updoot.value !== val) {
+			await getConnection().transaction(async (tm) => {
+				await tm.query(
+					`
           update updoot
           set value = $1
           where "postId" = $2 and "userId" = $3
         `,
-          [val, postId, userId]
-        );
+					[val, postId, userId]
+				);
 
-        await tm.query(
-          `
+				await tm.query(
+					`
         update post
         set points = points + $1
         where id = $2
         `,
-          [2 * val, postId]
-        );
-      });
-    } else if (!updoot) {
-      await getConnection().transaction(async (tm) => {
-        await tm.query(
-          `
+					[2 * val, postId]
+				);
+			});
+		} else if (!updoot) {
+			await getConnection().transaction(async (tm) => {
+				await tm.query(
+					`
         insert into updoot ("userId", "postId", "value")
         values ($1,$2,$3)
         `,
-          [userId, postId, val]
-        );
-        await tm.query(
-          `
+					[userId, postId, val]
+				);
+				await tm.query(
+					`
         update post
         set points = points + $1
         where id = $2
         `,
-          [val, postId]
-        );
-      });
-    }
-    return true;
-  }
+					[val, postId]
+				);
+			});
+		}
+		return true;
+	}
 
-  @FieldResolver(() => String)
-  textSnippet(@Root() root: Post) {
-    return root.content.slice(0, 65);
-  }
+	@FieldResolver(() => String)
+	textSnippet(@Root() root: Post) {
+		return root.content.slice(0, 65);
+	}
 
-  @Query(() => PaginatedPosts)
-  async posts(
-    @Arg('limit', () => Int) limit: number,
-    @Arg('cursor', () => String, { nullable: true }) cursor: string | null
-  ): Promise<PaginatedPosts> {
-    const realLimmit = Math.min(50, limit);
-    const realLimmitPusOne = Math.min(50, limit) + 1;
+	@Query(() => PaginatedPosts)
+	async posts(
+		@Arg('limit', () => Int) limit: number,
+		@Arg('cursor', () => String, { nullable: true }) cursor: string | null
+	): Promise<PaginatedPosts> {
+		const realLimmit = Math.min(20, limit);
+		const realLimmitPusOne = Math.min(20, limit) + 1;
 
-    const replacements: any[] = [realLimmitPusOne];
+		const replacements: any[] = [realLimmitPusOne];
 
-    if (cursor) {
-      replacements.push(new Date(parseInt(cursor)));
-    }
+		if (cursor) {
+			replacements.push(new Date(parseInt(cursor)));
+		}
 
-    const posts = await getConnection().query(
-      `
+		const posts = await getConnection().query(
+			`
       select p.*, 
       json_build_object(
         'id', u.id,
@@ -122,33 +122,33 @@ export class PostResolver {
         ) author
       from post p
       inner join public.user u on u.id = p."authorId"
-      ${cursor ? `where('post."createdAt" < $2` : ''}
+      ${cursor ? `where(post."createdAt" < $2` : ''}
       order by p."createdAt" DESC
       limit $1
     `,
-      replacements
-    );
+			replacements
+		);
 
-    return {
-      posts: posts.slice(0, realLimmit),
-      hasMore: posts.length === realLimmitPusOne,
-    };
-  }
+		return {
+			posts: posts.slice(0, realLimmit),
+			hasMore: posts.length === realLimmitPusOne,
+		};
+	}
 
-  @Query(() => Post, { nullable: true })
-  async post(@Arg('id', () => Int) id: number): Promise<Post | undefined> {
-    return await Post.findOne(id);
-  }
+	@Query(() => Post, { nullable: true })
+	async post(@Arg('id', () => Int) id: number): Promise<Post | undefined> {
+		return await Post.findOne(id);
+	}
 
-  @Mutation(() => Post)
-  @UseMiddleware(isAuth)
-  async createPost(
-    @Arg('options', () => PostInput) options: PostInput,
-    @Ctx() { req }: MyContext
-  ): Promise<Post> {
-    return await Post.create({
-      ...options,
-      authorId: req.session.userId,
-    }).save();
-  }
+	@Mutation(() => Post)
+	@UseMiddleware(isAuth)
+	async createPost(
+		@Arg('options', () => PostInput) options: PostInput,
+		@Ctx() { req }: MyContext
+	): Promise<Post> {
+		return await Post.create({
+			...options,
+			authorId: req.session.userId,
+		}).save();
+	}
 }
