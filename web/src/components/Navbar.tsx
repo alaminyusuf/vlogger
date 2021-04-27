@@ -3,6 +3,7 @@ import { Box, Button, Flex, Link } from '@chakra-ui/react';
 import { useLogoutMutation, useMeQuery } from '../generated/graphql';
 import { isServer } from '../utils/isServer';
 import { useRouter } from 'next/router';
+import { ChevronLeftIcon } from '@chakra-ui/icons';
 
 interface navbarProp {}
 
@@ -12,6 +13,7 @@ const Navbar: React.FC<navbarProp> = ({}) => {
 		pause: isServer(),
 	});
 	const router = useRouter();
+	const goBack = () => router.back();
 
 	let body = null;
 
@@ -31,11 +33,15 @@ const Navbar: React.FC<navbarProp> = ({}) => {
 		);
 	} else if (router.pathname === '/profile') {
 		body = (
-			<Flex mr={5}>
+			<Flex justifyContent='space-between'>
+				<Button variant='link' onClick={goBack} fontSize={20} ml={2}>
+					<ChevronLeftIcon />
+				</Button>
 				<Button
 					variant='link'
 					onClick={() => logout()}
 					isLoading={logoutFetching}
+					mr={5}
 				>
 					LogOut
 				</Button>
@@ -43,23 +49,29 @@ const Navbar: React.FC<navbarProp> = ({}) => {
 		);
 	} else {
 		body = (
-			<Flex mr={2}>
-				<Link href='profile'>
-					<Box mr={2}>{data.me.username}</Box>
-				</Link>
-				<Button
-					variant='link'
-					onClick={() => logout()}
-					isLoading={logoutFetching}
-				>
-					LogOut
-				</Button>
-			</Flex>
+			<Box>
+				<Flex mr={2} ml='auto' w='auto'>
+					<Link href='profile' mr={2}>
+						{data.me.username}
+					</Link>
+					<Button
+						variant='link'
+						onClick={() => logout()}
+						isLoading={logoutFetching}
+					>
+						LogOut
+					</Button>
+				</Flex>
+			</Box>
 		);
 	}
 	return (
 		<Flex bg='tan' py={5}>
-			<Box ml='auto'>{body}</Box>
+			{router.pathname === '/profile' ? (
+				<Box w='100%'>{body}</Box>
+			) : (
+				<Box ml='auto'>{body}</Box>
+			)}
 		</Flex>
 	);
 };
