@@ -3,21 +3,23 @@ import { Box } from '@chakra-ui/react';
 export type WrapperVariant = 'small' | 'regular';
 
 interface WrapperProps {
-  variant?: WrapperVariant;
+	variant?: WrapperVariant;
 }
 
 export const Wrapper: React.FC<WrapperProps> = ({
-  children,
-  variant = 'regular',
+	children,
+	variant = 'regular',
 }) => {
-  return (
-    <Box
-      w='90%'
-      mt={8}
-      mx='auto'
-      maxW={variant === 'regular' ? '600px' : '400px'}
-    >
-      {children}
-    </Box>
-  );
+	return (
+		<Box
+			w='90%'
+			mt={8}
+			mx='auto'
+			maxW={variant === 'regular' ? '600px' : '400px'}
+			position='relative'
+			h='100%'
+		>
+			{children}
+		</Box>
+	);
 };

@@ -36,7 +36,7 @@ const Index = () => {
 				<title>Home</title>
 			</Head>
 			<Layout>
-				<Flex>
+				<Flex my={5}>
 					<Heading>Fashionista</Heading>
 					<Link href='create-post' ml='auto'>
 						Create Post

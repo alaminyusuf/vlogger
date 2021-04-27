@@ -8,7 +8,7 @@ const Footer = () => {
 				bgColor='tan'
 				mt={5}
 				bottom={0}
-				position='fixed'
+				position='sticky'
 				w='100%'
 			>
 				<Box>Fashionista</Box>
