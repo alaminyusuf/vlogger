@@ -31,7 +31,10 @@ const Navbar: React.FC<navbarProp> = ({}) => {
 				</Link>
 			</>
 		);
-	} else if (router.pathname === '/profile') {
+	} else if (
+		router.pathname === '/profile' ||
+		router.pathname === '/create-post'
+	) {
 		body = (
 			<Flex justifyContent='space-between'>
 				<Button variant='link' onClick={goBack} fontSize={20} ml={2}>
@@ -67,7 +70,7 @@ const Navbar: React.FC<navbarProp> = ({}) => {
 	}
 	return (
 		<Flex bg='tan' py={5}>
-			{router.pathname === '/profile' ? (
+			{router.pathname !== '/' ? (
 				<Box w='100%'>{body}</Box>
 			) : (
 				<Box ml='auto'>{body}</Box>
