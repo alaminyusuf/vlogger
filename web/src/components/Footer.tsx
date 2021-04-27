@@ -8,6 +8,8 @@ const Footer = () => {
 				bgColor='tan'
 				mt={5}
 				bottom={0}
+				position='fixed'
+				w='100%'
 			>
 				<Box>Fashionista</Box>
 				&copy;2021
