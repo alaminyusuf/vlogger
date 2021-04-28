@@ -151,4 +151,11 @@ export class PostResolver {
 			authorId: req.session.userId,
 		}).save();
 	}
+
+	@Mutation(() => Boolean)
+	@UseMiddleware(isAuth)
+	async deletePost(@Arg('id', () => Int) id: number): Promise<boolean> {
+		await Post.delete(id);
+		return true;
+	}
 }
