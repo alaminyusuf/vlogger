@@ -12,7 +12,7 @@ const Footer = () => {
 	});
 	let body = null;
 
-	if (router.pathname !== '/' || data!.posts.posts.length <= 2) {
+	if (router.pathname !== '/' && data!.posts.posts.length <= 2) {
 		body = (
 			<Flex
 				justifyContent='space-evenly'
