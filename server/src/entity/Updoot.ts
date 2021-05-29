@@ -4,8 +4,8 @@ import { Post } from './Post';
 
 @Entity()
 export class Updoot extends BaseEntity {
-	@Column({ type: 'int' })
-	value: number;
+	@Column({ type: 'boolean', default: false, nullable: true })
+	value: boolean;
 
 	@ManyToOne(() => User, (user) => user.updoot)
 	user: User;
