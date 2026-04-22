@@ -10,6 +10,7 @@ import {
 	PrimaryGeneratedColumn,
 	UpdateDateColumn,
 } from 'typeorm';
+import { LiveStream } from './LiveStream';
 import { Field, Int, ObjectType } from 'type-graphql';
 
 @ObjectType()
@@ -33,8 +34,12 @@ export class User extends BaseEntity {
 	@Column({ nullable: false })
 	public password!: string;
 
-	@ManyToOne(() => Updoot, (updoot) => updoot.user)
+	@OneToMany(() => Updoot, (updoot) => updoot.user)
 	public updoot: Updoot[];
+
+	@Field(() => [LiveStream])
+	@OneToMany(() => LiveStream, (ls) => ls.creator)
+	liveStreams: LiveStream[];
 
 	@Field(() => String)
 	@CreateDateColumn()
