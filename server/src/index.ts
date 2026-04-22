@@ -10,26 +10,34 @@ import { MyContext } from './types';
 // Resolvers
 import { HelloResolver } from './resolvers/hello';
 import { UserResolver } from './resolvers/user';
+import { LiveStreamResolver } from './resolvers/liveStream';
 
 import connectRedis from 'connect-redis';
 import express from 'express';
 import Redis from 'ioredis';
 import session from 'express-session';
+import { logger } from './utils/Logger';
+import { formatError } from './utils/ErrorHandler';
 
 const main = async () => {
   const app = express();
 
   let retries = 5;
-  try {
-    while (retries) {
+  while (retries) {
+    try {
       await createConnection();
+      logger.info('Database connected successfully');
       break;
+    } catch (e) {
+      logger.error('Database connection failed', e);
+      retries -= 1;
+      logger.info(`Retries left: ${retries}`);
+      if (retries === 0) {
+        logger.error('Could not connect to database, exiting...');
+        process.exit(1);
+      }
+      await new Promise((res) => setTimeout(res, 5000));
     }
-  } catch (e) {
-    console.log(e);
-    retries -= 1;
-    console.log(`retries left: ${retries}`);
-    await new Promise((res) => setTimeout(res, 4000));
   }
 
   //   const conn = getConnection();
@@ -70,15 +78,16 @@ const main = async () => {
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [HelloResolver, UserResolver, PostResolver],
+      resolvers: [HelloResolver, UserResolver, PostResolver, LiveStreamResolver],
       validate: false,
     }),
     context: ({ req, res }): MyContext => ({ req, res, redis }),
+    formatError,
   });
 
   apolloServer.applyMiddleware({ app, cors: false });
 
-  app.listen(4000, () => console.info('Server is running on PORT 4000'));
+  app.listen(4000, () => logger.info('Server is running on PORT 4000'));
 };
 
 main();
