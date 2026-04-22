@@ -36,6 +36,20 @@ class UserResponse {
   user?: User;
 }
 
+/**
+ * Simple HelloWorld resolver for testing the API.
+ */
+@Resolver()
+export class HelloResolver {
+  @Query(() => String)
+  hello() {
+    return 'hello world';
+  }
+}
+
+/**
+ * Resolver for User related operations including authentication.
+ */
 @Resolver(User)
 export class UserResolver {
   @FieldResolver(() => String)
@@ -268,7 +282,7 @@ export class UserResolver {
     return new Promise((resolve) =>
       req.session.destroy((err: any) => {
         if (err) {
-          console.log(err);
+          logger.error('Session destruction error', err);
           resolve(false);
           return;
         }
