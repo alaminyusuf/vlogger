@@ -15,6 +15,15 @@ import { isAuth } from '../middleware/isAuth';
 import { MyContext } from '../types';
 import { logger } from '../utils/Logger';
 
+@ObjectType()
+class FieldError {
+  @Field()
+  field: string;
+
+  @Field()
+  message: string;
+}
+
 @InputType()
 class LiveStreamInput {
   @Field()
@@ -33,16 +42,14 @@ class LiveStreamResponse {
   liveStream?: LiveStream;
 }
 
-@ObjectType()
-class FieldError {
-  @Field()
-  field: string;
-  @Field()
-  message: string;
-}
-
+/**
+ * Resolver for LiveStream related operations.
+ */
 @Resolver(LiveStream)
 export class LiveStreamResolver {
+  /**
+   * Fetches all active live streams.
+   */
   @Query(() => [LiveStream])
   async liveStreams(): Promise<LiveStream[]> {
     return LiveStream.find({ where: { isActive: true }, relations: ['creator'] });
