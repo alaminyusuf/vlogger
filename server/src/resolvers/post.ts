@@ -16,6 +16,7 @@ import {
   ObjectType,
 } from 'type-graphql';
 import { Post } from '../entity/Post';
+import { logger } from '../utils/Logger';
 import { getConnection } from 'typeorm';
 
 @InputType()
@@ -98,6 +99,11 @@ export class PostResolver {
     return root.content.slice(0, 65);
   }
 
+  /**
+   * Fetches a paginated list of posts.
+   * @param limit - Maximum number of posts to fetch.
+   * @param cursor - Pagination cursor (optional).
+   */
   @Query(() => PaginatedPosts)
   async posts(
     @Arg('limit', () => Int) limit: number,
@@ -126,7 +132,7 @@ export class PostResolver {
       });
     }
 
-    console.log(realLimmit, posts.length);
+    logger.info(`Fetched ${posts.length} posts with limit ${realLimmit}`);
 
     return {
       posts,
@@ -158,6 +164,10 @@ export class PostResolver {
     return true;
   }
 
+  /**
+   * Toggle like/vote on a post.
+   * @param postId - The ID of the post to like.
+   */
   @Mutation(() => Boolean)
   @UseMiddleware(isAuth)
   async like(
@@ -179,7 +189,7 @@ export class PostResolver {
             [val, postId, userId]
           );
         });
-        console.log('adding vote');
+        logger.info(`Adding vote to post ${postId} by user ${userId}`);
       } else if (post.value === true) {
         const val = false;
         await getConnection().transaction(async (tm) => {
@@ -192,7 +202,7 @@ export class PostResolver {
             [val, postId, userId]
           );
         });
-        console.log('subtracting vote');
+        logger.info(`Subtracting vote from post ${postId} by user ${userId}`);
       }
     }
     return post?.value;
