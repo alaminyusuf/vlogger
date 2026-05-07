@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { PostResolver } from './resolvers/post';
+
 import { ApolloServer } from 'apollo-server-express';
 import { buildSchema } from 'type-graphql';
 import { createConnection } from 'typeorm';
@@ -8,7 +8,7 @@ import cors from 'cors';
 import { MyContext } from './types';
 
 // Resolvers
-import { HelloResolver } from './resolvers/hello';
+
 import { UserResolver } from './resolvers/user';
 import { LiveStreamResolver } from './resolvers/liveStream';
 
@@ -78,7 +78,7 @@ const main = async () => {
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [HelloResolver, UserResolver, PostResolver, LiveStreamResolver],
+      resolvers: [UserResolver, LiveStreamResolver],
       validate: false,
     }),
     context: ({ req, res }): MyContext => ({ req, res, redis }),

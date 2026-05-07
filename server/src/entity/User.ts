@@ -1,5 +1,4 @@
-import { Updoot } from './Updoot';
-import { Post } from './Post';
+// ...existing code...
 import {
 	BaseEntity,
 	Column,
@@ -9,15 +8,15 @@ import {
 	OneToMany,
 	PrimaryGeneratedColumn,
 	UpdateDateColumn,
-} from 'typeorm';
-import { LiveStream } from './LiveStream';
-import { Field, Int, ObjectType } from 'type-graphql';
+} from "typeorm";
+import { LiveStream } from "./LiveStream";
+import { Field, Int, ObjectType } from "type-graphql";
 
 @ObjectType()
 @Entity()
 export class User extends BaseEntity {
 	@Field(() => Int)
-	@PrimaryGeneratedColumn({ type: 'int' })
+	@PrimaryGeneratedColumn({ type: "int" })
 	public id!: number;
 
 	@Field(() => String)
@@ -28,14 +27,12 @@ export class User extends BaseEntity {
 	@Column({ nullable: false, unique: true })
 	public email!: string;
 
-	@OneToMany(() => Post, (post) => post.author)
-	posts: Post[];
+	// ...existing code...
 
 	@Column({ nullable: false })
 	public password!: string;
 
-	@OneToMany(() => Updoot, (updoot) => updoot.user)
-	public updoot: Updoot[];
+	// ...existing code...
 
 	@Field(() => [LiveStream])
 	@OneToMany(() => LiveStream, (ls) => ls.creator)
