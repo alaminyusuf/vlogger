@@ -36,16 +36,7 @@ class UserResponse {
   user?: User;
 }
 
-/**
- * Simple HelloWorld resolver for testing the API.
- */
-@Resolver()
-export class HelloResolver {
-  @Query(() => String)
-  hello() {
-    return 'hello world';
-  }
-}
+
 
 /**
  * Resolver for User related operations including authentication.
