@@ -42,17 +42,28 @@ class LiveStreamResponse {
   liveStream?: LiveStream;
 }
 
+import { v4 } from 'uuid';
+
 /**
  * Resolver for LiveStream related operations.
  */
 @Resolver(LiveStream)
 export class LiveStreamResolver {
   /**
-   * Fetches all active live streams.
+   * Fetches active live streams with pagination.
    */
   @Query(() => [LiveStream])
-  async liveStreams(): Promise<LiveStream[]> {
-    return LiveStream.find({ where: { isActive: true }, relations: ['creator'] });
+  async liveStreams(
+    @Arg('limit', () => Int, { defaultValue: 10 }) limit: number,
+    @Arg('offset', () => Int, { defaultValue: 0 }) offset: number
+  ): Promise<LiveStream[]> {
+    return LiveStream.find({
+      where: { status: 'live' },
+      relations: ['creator'],
+      take: Math.min(limit, 50),
+      skip: offset,
+      order: { createdAt: 'DESC' },
+    });
   }
 
   @Query(() => LiveStream, { nullable: true })
@@ -67,9 +78,13 @@ export class LiveStreamResolver {
     @Ctx() { req }: MyContext
   ): Promise<LiveStreamResponse> {
     try {
+      const streamKey = `live_${v4().replace(/-/g, '')}`;
       const liveStream = await LiveStream.create({
         ...options,
         creatorId: req.session.userId,
+        streamKey,
+        status: 'live',
+        isActive: true,
       }).save();
       logger.info(`Live stream created: ${liveStream.id} by user ${req.session.userId}`);
       return { liveStream };
@@ -96,7 +111,7 @@ export class LiveStreamResolver {
     if (!liveStream || liveStream.creatorId !== req.session.userId) {
       return false;
     }
-    await LiveStream.update({ id }, { isActive: false });
+    await LiveStream.update({ id }, { status: 'ended', isActive: false });
     logger.info(`Live stream ended: ${id}`);
     return true;
   }

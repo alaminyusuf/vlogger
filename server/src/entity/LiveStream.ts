@@ -29,6 +29,17 @@ export class LiveStream extends BaseEntity {
   @Column({ default: true })
   isActive: boolean;
 
+  @Field(() => String)
+  @Column({ default: 'live' })
+  status: string; // live, ended, scheduled
+
+  @Field(() => Int)
+  @Column({ default: 0 })
+  viewerCount: number;
+
+  @Column({ unique: true })
+  streamKey: string;
+
   @Field(() => Int)
   @Column()
   creatorId: number;
