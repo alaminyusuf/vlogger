@@ -1,0 +1,15 @@
+mutation CreateLiveStream($options: LiveStreamInput!) {
+  createLiveStream(options: $options) {
+    errors {
+      field
+      message
+    }
+    liveStream {
+      id
+      title
+      description
+      isActive
+      createdAt
+    }
+  }
+}

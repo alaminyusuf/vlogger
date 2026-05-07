@@ -1,0 +1,13 @@
+query LiveStreams {
+  liveStreams {
+    id
+    title
+    description
+    isActive
+    createdAt
+    creator {
+      id
+      username
+    }
+  }
+}

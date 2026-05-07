@@ -33,10 +33,10 @@ const Navbar: React.FC<navbarProp> = ({}) => {
 		);
 	} else if (
 		router.pathname === '/profile' ||
-		router.pathname === '/create-post'
+		router.pathname === '/create-live-stream'
 	) {
 		body = (
-			<Flex justifyContent='space-between'>
+			<Flex justifyContent='space-between' alignItems="center">
 				<Button variant='link' onClick={goBack} fontSize={20} ml={2}>
 					<ChevronLeftIcon />
 				</Button>
@@ -53,8 +53,13 @@ const Navbar: React.FC<navbarProp> = ({}) => {
 	} else {
 		body = (
 			<Box>
-				<Flex mr={2} ml='auto' w='auto'>
-					<Link href='profile' mr={2}>
+				<Flex mr={2} ml='auto' w='auto' alignItems="center">
+					<Link href='create-live-stream' mr={4}>
+						<Button colorScheme="teal" variant="solid" size="sm">
+							Create Stream
+						</Button>
+					</Link>
+					<Link href='profile' mr={4}>
 						{data.me.username}
 					</Link>
 					<Button
