@@ -1,7 +1,7 @@
 {
   "name": "vlogger-server",
   "version": "1.0.0",
-  "description": "streaming vlogging platform",
+  "description": "Streaming vlogging platform",
   "main": "index.ts",
   "scripts": {
     "start": "node src/index.ts",
@@ -11,7 +11,7 @@
     "db:migrate": "ts-node ./node_modules/typeorm/cli.js migration:run"
   },
   "keywords": [
-    "streaming",
+    "Streaming",
     "vlog",
     "vlogging",
     "nodejs",

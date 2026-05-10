@@ -27,8 +27,8 @@ const Footer = () => {
         w='100%'
         bottom={0}
       >
-        <Box>streamingista</Box>
-        &copy;2021
+        <Box>Vlogger Streaming Service</Box>
+        &copy;2026
       </Flex>
     );
   }

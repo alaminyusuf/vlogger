@@ -1,6 +1,6 @@
 # Vlogger - Scalable Live Streaming Infrastructure
 
-Vlogger is a specialized software platform designed for high-performance, scalable live streaming. Unlike traditional social media platforms, Vlogger focuses on providing a robust API and creator tools for managing professional-grade live broadcasts.
+Vlogger is a specialized software platform designed for high-performance, scalable live Streaming. Unlike traditional social media platforms, Vlogger focuses on providing a robust API and creator tools for managing professional-grade live broadcasts.
 
 ## 🚀 Features
 
@@ -70,7 +70,7 @@ npm run dev
 - `/server/src/resolvers`: GraphQL API logic.
 
 ## 📈 Recent Milestones
-- [x] Pivot to dedicated streaming software (removed legacy social features).
+- [x] Pivot to dedicated Streaming software (removed legacy social features).
 - [x] Implemented scalable pagination for active streams.
 - [x] Migrated to TypeORM 0.3 and modern dependency stack.
 - [x] Created premium SPA for stream management and viewing.
