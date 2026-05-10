@@ -1,23 +1,17 @@
 import 'reflect-metadata';
-
 import { ApolloServer } from 'apollo-server-express';
 import { buildSchema } from 'type-graphql';
-import { createConnection } from 'typeorm';
 import cors from 'cors';
-
 import { MyContext } from './types';
-
-// Resolvers
-
 import { UserResolver } from './resolvers/user';
 import { LiveStreamResolver } from './resolvers/liveStream';
-
 import connectRedis from 'connect-redis';
 import express from 'express';
 import Redis from 'ioredis';
 import session from 'express-session';
 import { logger } from './utils/Logger';
 import { formatError } from './utils/ErrorHandler';
+import { AppDataSource } from './data-source';
 
 const main = async () => {
   const app = express();
@@ -25,7 +19,7 @@ const main = async () => {
   let retries = 5;
   while (retries) {
     try {
-      await createConnection();
+      await AppDataSource.initialize();
       logger.info('Database connected successfully');
       break;
     } catch (e) {

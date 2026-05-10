@@ -27,7 +27,7 @@ const Footer = () => {
         w='100%'
         bottom={0}
       >
-        <Box>Fashionista</Box>
+        <Box>streamingista</Box>
         &copy;2021
       </Flex>
     );

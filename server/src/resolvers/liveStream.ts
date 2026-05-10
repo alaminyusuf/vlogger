@@ -67,8 +67,8 @@ export class LiveStreamResolver {
   }
 
   @Query(() => LiveStream, { nullable: true })
-  async liveStream(@Arg('id', () => Int) id: number): Promise<LiveStream | undefined> {
-    return LiveStream.findOne(id, { relations: ['creator'] });
+  async liveStream(@Arg('id', () => Int) id: number): Promise<LiveStream | null> {
+    return LiveStream.findOne({ where: { id }, relations: ['creator'] });
   }
 
   @Mutation(() => LiveStreamResponse)
@@ -107,7 +107,7 @@ export class LiveStreamResolver {
     @Arg('id', () => Int) id: number,
     @Ctx() { req }: MyContext
   ): Promise<boolean> {
-    const liveStream = await LiveStream.findOne(id);
+    const liveStream = await LiveStream.findOne({ where: { id } });
     if (!liveStream || liveStream.creatorId !== req.session.userId) {
       return false;
     }

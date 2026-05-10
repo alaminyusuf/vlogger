@@ -24,26 +24,15 @@ Authentication is handled via session cookies. Log in using the `login` mutation
 - `forgetPassword(email: String!): Boolean!`: Sends a password reset email.
 - `changePassword(token: String!, newPassword: String!): UserResponse!`: Changes password using a reset token.
 
-### Post Resolver
-
-#### Queries
-- `posts(limit: Int!, cursor: String): PaginatedPosts!`: Fetches a paginated list of posts.
-- `post(id: Int!): Post`: Fetches a single post by ID.
-
-#### Mutations
-- `createPost(options: PostInput!): Post!`: Creates a new written post.
-- `deletePost(id: Int!): Boolean!`: Deletes a post.
-- `like(postId: Int!): Boolean!`: Toggles a like/vote on a post.
-
 ### LiveStream Resolver
 
 #### Queries
-- `liveStreams: [LiveStream!]!`: Fetches all active live streams.
+- `liveStreams(limit: Int, offset: Int): [LiveStream!]!`: Fetches active live streams with pagination.
 - `liveStream(id: Int!): LiveStream`: Fetches a single live stream by ID.
 
 #### Mutations
-- `createLiveStream(options: LiveStreamInput!): LiveStreamResponse!`: Creates a new live stream entry.
-- `endLiveStream(id: Int!): Boolean!`: Ends a live stream session.
+- `createLiveStream(options: LiveStreamInput!): LiveStreamResponse!`: Creates a new live stream entry and generates a secure stream key.
+- `endLiveStream(id: Int!): Boolean!`: Ends a live stream session and invalidates the stream key.
 
 ## Error Handling
 The API uses a centralized error handler. Errors are returned in the standard GraphQL format. Internal server errors are logged and masked in production.

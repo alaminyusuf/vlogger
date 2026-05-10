@@ -16,7 +16,7 @@ services:
       - .:/usr/src/app
 
   vlogs-db:
-    image: postgres:9.6.19-alpine
+    image: postgres:15-alpine
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -27,7 +27,7 @@ services:
       - .:/usr/src/pgdata/data
 
   redis-service:
-    image: redis:alpine3.12
+    image: redis:7-alpine
     ports:
       - 6379:6379
     volumes:

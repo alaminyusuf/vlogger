@@ -16,7 +16,7 @@ import argon2 from 'argon2';
 import { InputOptions } from './InputOptions';
 import { v4 } from 'uuid';
 import { sendEmail } from '../utils/emailUtil';
-import { getConnection } from 'typeorm';
+import { AppDataSource } from '../data-source';
 
 @ObjectType()
 class FieldError {
@@ -81,7 +81,7 @@ export class UserResolver {
     }
 
     const userIdNum = parseInt(userId);
-    const user = await User.findOne(userIdNum);
+    const user = await User.findOne({ where: { id: userIdNum } });
 
     if (!user) {
       return {
@@ -137,14 +137,14 @@ export class UserResolver {
   }
 
   @Query(() => [User])
-  async users(): Promise<User[] | undefined> {
+  async users(): Promise<User[]> {
     return User.find();
   }
 
   @Query(() => User, { nullable: true })
   async user(
     @Arg('username', () => String) username: string
-  ): Promise<User | undefined> {
+  ): Promise<User | null> {
     return User.findOne({ where: { username } });
   }
 
@@ -160,8 +160,7 @@ export class UserResolver {
 
     const hashedPassword = await argon2.hash(options.password);
     try {
-      const result = await getConnection()
-        .createQueryBuilder()
+      const result = await AppDataSource.createQueryBuilder()
         .insert()
         .into(User)
         .values({
